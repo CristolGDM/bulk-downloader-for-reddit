@@ -6,6 +6,7 @@ import urllib.parse
 from typing import Type
 
 from bdfr.exceptions import NotADownloadableLinkError
+from bdfr.site_downloaders.artstation import Artstation
 from bdfr.site_downloaders.base_downloader import BaseDownloader
 from bdfr.site_downloaders.direct import Direct
 from bdfr.site_downloaders.erome import Erome
@@ -26,6 +27,8 @@ class DownloadFactory:
         sanitised_url = DownloadFactory.sanitise_url(url)
         if re.match(r'(i\.)?imgur.*\.gif.+$', sanitised_url):
             return Imgur
+        elif re.match(r'.*\.artstation\.com.*', sanitised_url):
+            return Artstation
         elif re.match(r'.*/.*\.\w{3,4}(\?[\w;&=]*)?$', sanitised_url) and \
                 not DownloadFactory.is_web_resource(sanitised_url):
             return Direct
