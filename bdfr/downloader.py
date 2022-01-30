@@ -5,7 +5,11 @@ import hashlib
 import logging.handlers
 import os
 import time
+<<<<<<< HEAD
 from collections.abc import Iterable
+=======
+import colorama
+>>>>>>> 5f2ed5c (Add better log message)
 from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
@@ -23,6 +27,15 @@ from bdfr.site_downloaders.download_factory import DownloadFactory
 
 logger = logging.getLogger(__name__)
 
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKCYAN = '\033[96m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
 
 def _calc_hash(existing_file: Path):
     chunk_size = 1024 * 1024
@@ -43,13 +56,26 @@ class RedditDownloader(RedditConnector):
             self.master_hash_list = self.scan_existing_files(self.download_directory)
 
     def download(self):
-        for generator in self.reddit_lists:
+        colorama.init()
+        for index, generator in enumerate(self.reddit_lists):
+            list_gen = list(generator)
+            count = len(self.reddit_lists)-1
+            sub_name = ""
             try:
-                for submission in generator:
+                for index2, submission in enumerate(list_gen):
+                    sub_name = submission.subreddit.display_name
+                    limit = self.args.limit or 1000
+                    number_of_submissions = len(list_gen)
                     try:
                         self._download_submission(submission)
                     except prawcore.PrawcoreException as e:
                         logger.error(f"Submission {submission.id} failed to download due to a PRAW exception: {e}")
+                    print(f'{OKCYAN}{sub_name} {index2+1}/{number_of_submissions} (sub {index+1}/{count}){ENDC}\n')
+                if sub_name:
+                    print(f'{OKGREEN}-------------------------------------------------------{ENDC}\n')
+                    print(f'{OKGREEN}Finished downloading {sub_name}{ENDC}\n')
+                    print(f'{OKGREEN}-------------------------------------------------------{ENDC}\n')
+                    
             except prawcore.PrawcoreException as e:
                 logger.error(f"The submission after {submission.id} failed to download due to a PRAW exception: {e}")
                 logger.debug("Waiting 60 seconds to continue")
