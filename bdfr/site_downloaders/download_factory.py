@@ -5,6 +5,7 @@ import re
 import urllib.parse
 
 from bdfr.exceptions import NotADownloadableLinkError
+from bdfr.site_downloaders.artstation import Artstation
 from bdfr.site_downloaders.base_downloader import BaseDownloader
 from bdfr.site_downloaders.delay_for_reddit import DelayForReddit
 from bdfr.site_downloaders.direct import Direct
@@ -31,6 +32,8 @@ class DownloadFactory:
             return Redgifs
         elif re.match(r"(thumbs\.|giant\.)?gfycat\.", sanitised_url):
             return Gfycat
+        elif re.match(r'.*\.artstation\.com.*', sanitised_url):
+            return Artstation
         elif re.match(r".*/.*\.[a-zA-Z34]{3,4}(\?[\w;&=]*)?$", sanitised_url) and not DownloadFactory.is_web_resource(
             sanitised_url
         ):
