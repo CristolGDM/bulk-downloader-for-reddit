@@ -11,7 +11,7 @@ from collections.abc import Iterable
 import colorama
 >>>>>>> 5f2ed5c (Add better log message)
 from datetime import datetime
-from multiprocessing import Pool
+# from multiprocessing import Pool
 from pathlib import Path
 from time import sleep
 
@@ -24,6 +24,8 @@ from bdfr import exceptions as errors
 from bdfr.configuration import Configuration
 from bdfr.connector import RedditConnector
 from bdfr.site_downloaders.download_factory import DownloadFactory
+
+from tqdm.contrib.concurrent import process_map
 
 logger = logging.getLogger(__name__)
 
@@ -186,9 +188,9 @@ class RedditDownloader(RedditConnector):
             files.extend([Path(dirpath, file) for file in filenames])
         logger.info(f"Calculating hashes for {len(files)} files")
 
-        pool = Pool(15)
-        results = pool.map(_calc_hash, files)
-        pool.close()
+        # pool = Pool(15)
+        results = process_map(_calc_hash, files, chunksize=1)
+        # pool.close()
 
         hash_list = {res[1]: res[0] for res in results}
         return hash_list
