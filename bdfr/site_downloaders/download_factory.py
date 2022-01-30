@@ -7,7 +7,11 @@ import urllib.parse
 from bdfr.exceptions import NotADownloadableLinkError
 from bdfr.site_downloaders.artstation import Artstation
 from bdfr.site_downloaders.base_downloader import BaseDownloader
+<<<<<<< HEAD
 from bdfr.site_downloaders.delay_for_reddit import DelayForReddit
+=======
+from bdfr.site_downloaders.deviantart import DeviantArt
+>>>>>>> bec143a (Pass downloader to factory)
 from bdfr.site_downloaders.direct import Direct
 from bdfr.site_downloaders.erome import Erome
 from bdfr.site_downloaders.fallback_downloaders.ytdlp_fallback import YtdlpFallback
@@ -28,6 +32,8 @@ class DownloadFactory:
         sanitised_url = DownloadFactory.sanitise_url(url).lower()
         if re.match(r"(i\.|m\.|o\.)?imgur", sanitised_url):
             return Imgur
+        if re.match(r'.*deviantart\.com.*', sanitised_url):
+            return DeviantArt
         elif re.match(r"(i\.|thumbs\d\.|v\d\.)?(redgifs|gifdeliverynetwork)", sanitised_url):
             return Redgifs
         elif re.match(r"(thumbs\.|giant\.)?gfycat\.", sanitised_url):
