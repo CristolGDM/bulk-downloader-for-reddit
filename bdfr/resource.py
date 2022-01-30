@@ -12,6 +12,8 @@ import _hashlib
 import requests
 from praw.models import Submission
 
+from tqdm import tqdm
+
 from bdfr.exceptions import BulkDownloaderException
 
 logger = logging.getLogger(__name__)
@@ -67,9 +69,21 @@ class Resource:
             max_wait_time = 300
         while True:
             try:
-                response = requests.get(url, headers=headers)
-                if re.match(r'^2\d{2}', str(response.status_code)) and response.content:
-                    return response.content
+                response = requests.get(url, stream=True, headers=headers)
+                total_size_in_bytes= int(response.headers.get('content-length', 0))
+                block_size = 1024 #1 Kibibyte
+                progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True, colour="yellow")
+                chunks = []
+                for data in response.iter_content(block_size):
+                    chunks.append(data)
+                    progress_bar.update(len(data))
+                progress_bar.close()
+                if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
+                    raise BulkDownloaderException(
+                        f'Download stream stopped')
+                content = b''.join(chunks)
+                if re.match(r'^2\d{2}', str(response.status_code)) and content:
+                    return content
                 elif response.status_code in (408, 429):
                     raise requests.exceptions.ConnectionError(f'Response code {response.status_code}')
                 else:
