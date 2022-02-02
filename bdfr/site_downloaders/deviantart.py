@@ -27,7 +27,7 @@ class DeviantArt(BaseDownloader):
 
         if not re.match(r'https?://.*', link):
             link = 'https://' + link
-        return [Resource(self.post, link, self.deviantart_download)]
+        return [Resource(self.post, link, self.deviantart_download(link))]
 
     @staticmethod
     def _get_link(url: str) -> str:
@@ -50,4 +50,7 @@ class DeviantArt(BaseDownloader):
                 'Referer': 'https://www.deviantart.com/',
             },
         }
+        logger.info("----------------------")
+        logger.info(url)
+        logger.info("----------------------")
         return lambda global_params: Resource.http_download(url, global_params | download_parameters)
