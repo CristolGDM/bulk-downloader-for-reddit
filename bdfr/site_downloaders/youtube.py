@@ -36,8 +36,9 @@ class Youtube(BaseDownloader):
     def _download_video(self, ytdl_options: dict) -> Callable:
         yt_logger = logging.getLogger("youtube-dl")
         yt_logger.setLevel(logging.CRITICAL)
-        ytdl_options["quiet"] = True
-        ytdl_options["logger"] = yt_logger
+        ytdl_options['quiet'] = False
+        ytdl_options['logger'] = yt_logger
+        ytdl_options['noprogress'] = False
 
         def download(_: dict) -> bytes:
             with tempfile.TemporaryDirectory() as temp_dir:
