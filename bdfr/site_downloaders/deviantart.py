@@ -35,10 +35,12 @@ class DeviantArt(BaseDownloader):
         soup = bs4.BeautifulSoup(page.text, 'html.parser')
         title = soup.find('h1', attrs={'data-hook': 'deviation_title'})
         if not title:
+            logger.info("Could not find title")
             return
-
+        
         image = soup.find('img', attrs={'alt': title.string})
         if not image:
+            logger.info("Could not find image")
             return
 
         return image.get("src")
