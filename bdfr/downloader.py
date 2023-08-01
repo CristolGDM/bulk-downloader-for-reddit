@@ -5,11 +5,8 @@ import hashlib
 import logging.handlers
 import os
 import time
-<<<<<<< HEAD
 from collections.abc import Iterable
-=======
 import colorama
->>>>>>> 5f2ed5c (Add better log message)
 from datetime import datetime
 # from multiprocessing import Pool
 from pathlib import Path
